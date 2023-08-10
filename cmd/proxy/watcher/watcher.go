@@ -135,9 +135,11 @@ func (w *Watcher) Watch() (err error) {
 		if w.etcdcli != nil {
 			val, err := w.etcdcli.GetValue(etcd.TagZoneMarkDown)
 			if err == nil {
-				zoneid, _ := strconv.Atoi(val)
-				markdownobj.MarkDown(int32(zoneid))
-				glog.Infof("markdown: zoneid=%d", zoneid)
+				zoneid, err := strconv.ParseUint(val, 10, 32)
+				if err == nil {
+					markdownobj.MarkDown(int32(zoneid))
+					glog.Infof("markdown: zoneid=%d", zoneid)
+				}
 			}
 			if chMarkDown, err = w.etcdcli.WatchEvt(etcd.TagZoneMarkDown, ctx); err != nil {
 				glog.Errorln(err)
@@ -180,9 +182,11 @@ func (w *Watcher) Watch() (err error) {
 					glog.Info("etcd connected")
 					val, err := w.etcdcli.GetValue(etcd.TagZoneMarkDown)
 					if err == nil {
-						zoneid, _ := strconv.Atoi(val)
-						markdownobj.MarkDown(int32(zoneid))
-						glog.Infof("markdown: zoneid=%d", zoneid)
+						zoneid, err := strconv.ParseUint(val, 10, 32)
+						if err == nil {
+							markdownobj.MarkDown(int32(zoneid))
+							glog.Infof("markdown: zoneid=%d", zoneid)
+						}
 					}
 					if chMarkDown, err = w.etcdcli.WatchEvt(etcd.TagZoneMarkDown, ctx); err != nil {
 						glog.Errorln(err)
@@ -224,10 +228,13 @@ func (w *Watcher) onMarkDownEvent(ev *clientv3.Event) {
 		markdownobj.Reset()
 		return
 	}
-
-	zoneid, _ := strconv.Atoi(string(ev.Kv.Value))
-	glog.Infof("markdown: zoneid=%d", zoneid)
-	markdownobj.MarkDown(int32(zoneid))
+	zoneid, err := strconv.ParseUint(string(ev.Kv.Value), 10, 32)
+	if err == nil {
+		glog.Infof("markdown: zoneid=%d", zoneid)
+		markdownobj.MarkDown(int32(zoneid))
+	} else {
+		glog.Errorf("markdown failed. Error: %s Value: %s", err.Error(), string(ev.Kv.Value))
+	}
 }
 
 func (w *Watcher) Stop() {

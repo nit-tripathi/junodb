@@ -89,7 +89,7 @@ public class MetricTest {
         port = pConfig.getProperty("juno.server.port");
         InetAddress address = InetAddress.getByName(ip);
         ipAddr = address.getHostAddress();
-        LOGGER.error( "Vera: juno ip is " + ip + " juno port is " + port + ", ipaddr is " + ipAddr);
+        LOGGER.error( " juno ip is " + ip + " juno port is " + port + ", ipaddr is " + ipAddr);
 
         try{
             junoClient = JunoClientFactory.newJunoClient(new JunoPropertiesProvider(pConfig), SSLUtil.getSSLContext());
@@ -105,7 +105,7 @@ public class MetricTest {
 
     @AfterClass
     public void teardown() {
-        System.out.println("Calling teardown");
+        //System.out.println("Calling teardown");
         
         sfxRegistry.close();
         simpleMeterRegistry.close();
@@ -118,7 +118,7 @@ public class MetricTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("Calling BeforeEach");
+        //System.out.println("Calling BeforeEach");
         simpleMeterRegistry = new SimpleMeterRegistry();
         Metrics.globalRegistry.add(simpleMeterRegistry);
     }
@@ -130,7 +130,7 @@ public class MetricTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("Calling AfterEach");
+        //System.out.println("Calling AfterEach");
         simpleMeterRegistry.clear();
         simpleMeterRegistry.close();
         Metrics.globalRegistry.remove(simpleMeterRegistry);
